@@ -85,17 +85,23 @@ public class JSONDecoder {
     
     private func get(key: String) -> AnyObject? {
         let keys = key.componentsSeparatedByString(".")
-        
-        let result = keys.reduce(object as AnyObject?) {
-            value, key in
-            
-            guard let dict = value as? [String: AnyObject] else {
-                return nil
+
+        let resultObject: AnyObject?
+        if keys.count > 1 {
+
+            let result = keys.dropFirst().reduce(object[keys.first!]) {
+                value, key in
+                guard let dict = value as? NSDictionary else {
+                    return nil
+                }
+
+                return dict[key]
             }
-            
-            return dict[key]
+            resultObject = (result ?? object[key])
+        } else {
+            resultObject = object[key]
         }
-        return (result ?? object[key]).flatMap{$0 is NSNull ? nil : $0}
+        return resultObject.flatMap{$0 is NSNull ? nil : $0}
     }
     
     // JSONCompatible
@@ -191,10 +197,10 @@ public class JSONDecoder {
         guard let value = get(key) else {
             return []
         }
-        guard let array = value as? [JSONObject] else {
+        guard let array = value as? [NSDictionary] else {
             throw JSONDecodableError.ArrayTypeExpectedError(key: key, elementType: value.dynamicType)
         }
-        return try array.flatMap { try Element(object: $0)}
+        return try (array as! [[String: AnyObject]]).flatMap { try Element(object: $0)}
     }
     
     // [JSONDecodable]?
@@ -202,10 +208,10 @@ public class JSONDecoder {
         guard let value = get(key) else {
             return nil
         }
-        guard let array = value as? [JSONObject] else {
+        guard let array = value as? [NSDictionary] else {
             throw JSONDecodableError.ArrayTypeExpectedError(key: key, elementType: value.dynamicType)
         }
-        return try array.flatMap { try Element(object: $0)}
+        return try (array as! [[String: AnyObject]]).flatMap { try Element(object: $0)}
     }
     
     // [Enum]
