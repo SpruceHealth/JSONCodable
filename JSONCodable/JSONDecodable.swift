@@ -202,7 +202,7 @@ public class JSONDecoder {
     // [JSONCompatible]
     public func decode<Element: JSONCompatible>(_ key: String, filter: Bool = false) throws -> [Element] {
         guard let value = get(key) else {
-            throw JSONDecodableError.missingTypeError(key: key)
+            return []
         }
         guard let array = value as? [Element] else {
             throw JSONDecodableError.incompatibleTypeError(key: key, elementType: type(of: value), expectedType: [Element].self)
@@ -224,7 +224,7 @@ public class JSONDecoder {
     // [JSONDecodable]
     public func decode<Element: JSONDecodable>(_ key: String, filter: Bool = false) throws -> [Element] {
         guard let value = get(key) else {
-            throw JSONDecodableError.missingTypeError(key: key)
+            return []
         }
         guard let array = value as? [JSONObject] else {
             throw JSONDecodableError.arrayTypeExpectedError(key: key, elementType: type(of: value))
@@ -258,7 +258,7 @@ public class JSONDecoder {
     // [[JSONDecodable]]
     public func decode<Element: JSONDecodable>(_ key: String, filter: Bool = false) throws -> [[Element]] {
         guard let value = get(key) else {
-            throw JSONDecodableError.missingTypeError(key: key)
+            return []
         }
         guard let array = value as? [[JSONObject]] else {
             throw JSONDecodableError.arrayTypeExpectedError(key: key, elementType: type(of: value))
@@ -280,7 +280,7 @@ public class JSONDecoder {
     // [[JSONCompatible]]
     public func decode<Element: JSONCompatible>(_ key: String) throws -> [[Element]] {
         guard let value = get(key) else {
-            throw JSONDecodableError.missingTypeError(key: key)
+            return []
         }
         guard let array = value as? [[Element]] else {
             throw JSONDecodableError.incompatibleTypeError(key: key, elementType: type(of: value), expectedType: [Element].self)
@@ -296,7 +296,7 @@ public class JSONDecoder {
     // [Enum]
     public func decode<Enum: RawRepresentable>(_ key: String) throws -> [Enum] {
         guard let value = get(key) else {
-            throw JSONDecodableError.missingTypeError(key: key)
+            return []
         }
         guard let array = value as? [Enum.RawValue] else {
             throw JSONDecodableError.arrayTypeExpectedError(key: key, elementType: type(of: value))
